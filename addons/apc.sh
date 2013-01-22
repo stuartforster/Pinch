@@ -30,3 +30,5 @@ echo "extension=apc.so" >> ${PARAM_PHP_PREFIX}/php.ini
 sleep 5
 
 }
+
+pinch_apc

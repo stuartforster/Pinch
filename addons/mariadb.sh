@@ -55,3 +55,5 @@ chmod +x /etc/init.d/mysql.server
 sleep 5
 
 }
+
+pinch_mariadb

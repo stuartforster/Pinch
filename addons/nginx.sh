@@ -58,3 +58,5 @@ chmod +x /etc/init.d/nginx
 sleep 5
 
 }
+
+pinch_nginx
