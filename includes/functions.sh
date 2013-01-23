@@ -51,17 +51,22 @@ function pinch_check() {
 		if [[ -e "/var/run/nginx.pid" || -e "/var/run/php-fpm.pid" || -e "/var/run/mysql.pid" ]];
 
 			then PARAM_CHECK="Error: PID running under Nginx, PHP-FPM or MySQL / MariaDB"
-			else PARAM_CHECK="0"
 		
 		# Check 2: Existing Installation Directories
 		elif [[ -d ${PARAM_NGINX_PREFIX} || -d ${PARAM_PHP_PREFIX} || -d ${PARAM_MARIADB_PREFIX} ]];
 
 			then PARAM_CHECK+="Error: Conflicting Installation Directories of Nginx, PHP-FPM or MySQL / MariaDB Found"
-			else PARAM_CHECK="0"
 
+		else
+
+			PARAM_CHECK="0"
+			
 		fi
 
-		#If Param_check is 0, continue - else print param_check and prompt for continue!
+		if [[ ${PARAM_CHECK} == "0" ]];
+			then messenger "No existing installations found... Continuing..."
+			else messenger "${PARAM_CHECK}" && exit
+		fi
 
 }
 
