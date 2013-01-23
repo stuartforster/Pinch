@@ -15,25 +15,30 @@
 # Get Pinch Source Directory
 PARAM_SRC_DIR=$(pwd)
 
-# Include Pinch Build Scripts
+# Include Pinch Files
 . ${PARAM_SRC_DIR}/settings.sh
-. ${PARAM_SRC_DIR}/includes/functions.sh
-. ${PARAM_SRC_DIR}/includes/setup.sh
 
-# Check Pinch Compatability
+for includes in ${PARAM_SRC_DIR}/includes/*
+do
+	. $includes
+done
+
+for addons in ${PARAM_SRC_DIR}/addons/*
+do
+	. $addons
+done
+
+# Run Pinch Checks & Preparation
 pinch_check;
+pinch_prepare;
 
-# Run Pinch Addons
-for file in "${PARAM_SRC_DIR}/addons" ; do
-  . ${file}
-done
+# Run Pinch Installers (in Order)
+pinch_nginx;
+pinch_php;
+pinch_apc;
+pinch_mariadb;
 
-# Run Pinch Configuration Scripts
-for file in "${PARAM_SRC_DIR}/scripts" ; do
-  . ${file}
-done
-
-# Check Pinch Succesfull Install
+# Check Pinch Installed Succesfully
 pinch_success
 
 } 2>&1 | tee -a ${PARAM_LEMP_LOG}

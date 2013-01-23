@@ -15,7 +15,7 @@ function pinch_apc() {
 messenger "Download, Compile & Activate APC"
 
 cd ${PARAM_LEMP_FILES}
-installer_url_exists http://pecl.php.net/get/APC
+pinch_url_exists http://pecl.php.net/get/APC
 tar -xzf APC
 cd APC-*
 
@@ -30,5 +30,3 @@ echo "extension=apc.so" >> ${PARAM_PHP_PREFIX}/php.ini
 sleep 5
 
 }
-
-pinch_apc

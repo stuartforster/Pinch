@@ -30,47 +30,44 @@ function pinch_check() {
 	# Check pinch Compatability
 	messenger "Checking pinch compatability..."
 
-	OS=$(cat /etc/redhat-release | awk {'print $1}')
-	if [[ "$OS" -ne "CentOS" ]]; then
-		messenger "Please run this script on CentOS. Exiting..."
-		exit
-	fi
+		OS=$(cat /etc/redhat-release | awk {'print $1}')
+		if [[ "$OS" -ne "CentOS" ]]; then
+			messenger "Please run this script on CentOS. Exiting..."
+			exit
+		fi
 
 	# Check for Root Privledges
 	messenger "Checking privledges..."
 
-	if [[ $(/usr/bin/id -u) -ne 0 ]]; then
-		messenger "Please run this script as root or using sudo. Exiting..."
-		exit
-	fi
+		if [[ $(/usr/bin/id -u) -ne 0 ]]; then
+			messenger "Please run this script as root or using sudo. Exiting..."
+			exit
+		fi
 
 	# Check existing installations
 	messenger "Checking existing installations..."
 
-	# Check 1: Existing PIDs
-	if [ -e "/var/run/nginx.pid" ] || [ -e "/var/run/php-fpm.pid" ] || [ -e "/var/run/mysql.pid" ];
-		then messenger "Seems you might have an existing installation of NGINX, PHP or MariaDB / MySQL."
-			 messenger "It is strongly advisiable to run this script on a clean install of CentOS, or with existing installations removed."
-			 messenger "Would you like to proceed? y/n"
+		# Check 1: PID's
+		if [[ -e "/var/run/nginx.pid" || -e "/var/run/php-fpm.pid" || -e "/var/run/mysql.pid" ]];
 
-			 read PARAM_CONTINUE
+			then PARAM_CHECK="Error: PID running under Nginx, PHP-FPM or MySQL / MariaDB"
+			else PARAM_CHECK="0"
+		
+		# Check 2: Existing Installation Directories
+		elif [[ -d ${PARAM_NGINX_PREFIX} || -d ${PARAM_PHP_PREFIX} || -d ${PARAM_MARIADB_PREFIX} ]];
 
-			if [[ "$PARAM_CONTINUE" = "y" ]] || [[ "$PARAM_CONTINUE" = "Y" ]];
-				then messenger "Continuing..."
-				else messenger "Exiting..." && exit
-			fi
+			then PARAM_CHECK+="Error: Conflicting Installation Directories of Nginx, PHP-FPM or MySQL / MariaDB Found"
+			else PARAM_CHECK="0"
 
-		else messenger "No existing installations of NGINX, PHP or MariaDB / MySQL Found. Proceeding..."
-	fi
+		fi
 
-	# Check 2: Components in Same Location
-	# Get PHP / MariaDB / Nginx prefixes with bin, if exist, fail.
+		#If Param_check is 0, continue - else print param_check and prompt for continue!
 
 }
 
 # Check Succesfull Install
 function pinch_success() {
-	if [ -e "/var/run/nginx.pid" ] && [ -e "/var/run/php-fpm.pid" ] && [ -e "/var/run/mysql.pid" ];
+	if [[ -e "/var/run/nginx.pid" && -e "/var/run/php-fpm.pid" && -e "/var/run/mysql.pid" ]];
 		then messenger "Success! Head over to ${PARAM_PUBLIC_IP} to see your new LEMP stack in action"
 		else messenger "Error: Something went wrong, please scan for any errors in the output log at ${PARAM_INSTALL_LOG}"
 	fi

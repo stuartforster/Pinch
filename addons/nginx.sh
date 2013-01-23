@@ -45,7 +45,7 @@ patch -p1 < patch.spdy.txt
 
 ln -s ${PARAM_NGINX_PREFIX}/sbin/* /usr/bin/
 
-cp ${PARAM_SRC_DIR}/assets/nginx/nginx-upstart /etc/init.d/nginx
+cp ${PARAM_SRC_DIR}/assets/nginx/nginx-upstart.sh /etc/init.d/nginx
 
 chkconfig --add nginx && chkconfig nginx on
 
@@ -58,5 +58,3 @@ chmod +x /etc/init.d/nginx
 sleep 5
 
 }
-
-pinch_nginx

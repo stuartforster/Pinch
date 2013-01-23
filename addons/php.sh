@@ -68,5 +68,3 @@ chmod +x /etc/init.d/php-fpm
 sleep 5
 
 }
-
-pinch_php
