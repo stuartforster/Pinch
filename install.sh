@@ -33,10 +33,12 @@ pinch_check;
 pinch_prepare;
 
 # Run Pinch Installers (in Order)
+pinch_openssl;
 pinch_nginx;
 pinch_php;
 pinch_apc;
 pinch_mariadb;
+pinch_logrotate;
 
 # Check Pinch Installed Succesfully
 pinch_success

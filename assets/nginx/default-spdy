@@ -1,0 +1,34 @@
+    server {
+    
+        listen  443 ssl spdy default_server;
+        server_name  localhost;
+        root /var/www/spdy;
+        index index.php;
+
+        ssl_certificate      ssl/ssl.crt;
+        ssl_certificate_key  ssl/mydomain.com.key;
+
+        #charset koi8-r;
+
+        #access_log  logs/host.access.log  main;
+
+        #error_page  404              /404.html;
+
+        # redirect server error pages to the static page /50x.html
+        #
+        #error_page   500 502 503 504  /50x.html;
+        #location = /50x.html {
+        #    root   html;
+        #}
+
+        location ~* \.php$ {
+            root           /var/www/default;
+            fastcgi_pass   unix:/var/run/php-fpm.sock;
+            include        fastcgi_params;
+            fastcgi_index  index.php;
+            fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_param  SCRIPT_NAME $fastcgi_script_name;       
+
+        }
+
+    }

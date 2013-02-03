@@ -70,7 +70,7 @@ function pinch_check() {
 
 }
 
-# Check Succesfull Install
+# Check Succesfull Install (only nginx has pid??)
 function pinch_success() {
 	if [[ -e "/var/run/nginx.pid" && -e "/var/run/php-fpm.pid" && -e "/var/run/mysql.pid" ]];
 		then messenger "Success! Head over to ${PARAM_PUBLIC_IP} to see your new LEMP stack in action"
