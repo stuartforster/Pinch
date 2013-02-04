@@ -79,14 +79,14 @@ mkdir ${PARAM_NGINX_PREFIX}/sites-available
 	# Generic
 	cp ${PARAM_SRC_DIR}/assets/nginx/default.conf ${PARAM_NGINX_PREFIX}/sites-available/default.conf
 	mkdir /var/www/default
-	chown -r ${PARAM_NGINX_USER}:${PARAM_NGINX_USER} /var/www/default
+	chown -R ${PARAM_NGINX_USER}:${PARAM_NGINX_USER} /var/www/default
 	echo "Welcome to your new site running Nginx ${PARAM_NGINX_VERSION}, PHP-FPM ${PARAM_PHP_VERSION}, APC & MariaDB ${PARAM_MARIADB_VERSION}!" > /var/www/default/index.php
 	echo "<?php phpinfo(); ?>" > /var/www/default/index.php
 
 	# WordPress
 	cp ${PARAM_SRC_DIR}/assets/nginx/default-wordpress.conf ${PARAM_NGINX_PREFIX}/sites-available/default-wordpress.conf
 	mkdir /var/www/default-wordpress
-	chown -r ${PARAM_NGINX_USER}:${PARAM_NGINX_USER} /var/www/default-wordpress
+	chown -R ${PARAM_PHP_FPM_USER}:${PARAM_PHP_FPM_USER} /var/www/default-wordpress
 	echo "Welcome to your new site running Nginx ${PARAM_NGINX_VERSION}, PHP-FPM ${PARAM_PHP_VERSION}, APC & MariaDB ${PARAM_MARIADB_VERSION}!" > /var/www/default-wordpress/index.php
 	echo "You can now go ahead and install WordPress. You won't need to worry about the configuration files, permalink support etc has been built in." > /var/www/default-wordpress/index.php
 	echo "<?php phpinfo(); ?>" > /var/www/default-wordpress/index.php
@@ -94,11 +94,15 @@ mkdir ${PARAM_NGINX_PREFIX}/sites-available
 	# Generic + SPDY (Requires SSL)
 	cp ${PARAM_SRC_DIR}/assets/nginx/default-spdy.conf ${PARAM_NGINX_PREFIX}/sites-available/default-spdy.conf
 	mkdir /var/www/default-spdy
-	chown -r ${PARAM_NGINX_USER}:${PARAM_NGINX_USER} /var/www/default-spdy
+	chown -R ${PARAM_NGINX_USER}:${PARAM_NGINX_USER} /var/www/default-spdy
 	echo "Welcome to your new site running Nginx ${PARAM_NGINX_VERSION}, PHP-FPM ${PARAM_PHP_VERSION}, APC, MariaDB ${PARAM_MARIADB_VERSION} & SPDY!" > /var/www/default-spdy/index.php
 	echo "<?php phpinfo(); ?>" > /var/www/default-spdy/index.php
 
 	# Link File to Sites Enabled
 	ln -s ${PARAM_NGINX_PREFIX}/sites-available/default.conf ${PARAM_NGINX_PREFIX}/sites-enabled/default.conf
+
+# Reload Nginx
+
+service nginx reload
 
 }
