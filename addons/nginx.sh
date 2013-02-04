@@ -38,7 +38,7 @@ patch -p1 < patch.spdy.txt
 	--without-mail_pop3_module \
 	--without-mail_imap_module \
 	--without-mail_smtp_module \
-	--with-http_spdy_module
+	--with-http_spdy_module \
 	--with-openssl=${PARAM_LEMP_FILES}/openssl-${PARAM_OPENSSL_VERSION}
 
 make && make install
@@ -64,22 +64,41 @@ sleep 5
 # Configures Nginx for Development Use
 #
 
-# Backup NGINX Configuration File
-cp ${PARAM_NGINX_PREFIX}/conf/nginx.conf ${PARAM_NGINX_PREFIX}/conf/nginx.conf.backup
+# Backup NGINX Configuration Files
+mv ${PARAM_NGINX_PREFIX}/conf/nginx.conf ${PARAM_NGINX_PREFIX}/conf/nginx.conf.backup
+
+# Copy Nginx Configuration Files
+cp ${PARAM_SRC_DIR}/assets/nginx/nginx.conf ${PARAM_NGINX_PREFIX}/conf/nginx.conf 
 
 # Create Sites Enabled / Available Directories
 mkdir ${PARAM_NGINX_PREFIX}/sites-enabled
 mkdir ${PARAM_NGINX_PREFIX}/sites-available
 
-# Create Site Home Directories
-mkdir $PARAM_NGINX_SITES/default
+# Copy Default Site Configuration Files
 
-# Populate Default Site (Optional)
-touch $PARAM_NGINX_SITES/default/index.php && echo "<?php phpinfo(); ?>" > $PARAM_NGINX_SITES/default/index.php
+	# Generic
+	cp ${PARAM_SRC_DIR}/assets/nginx/default.conf ${PARAM_NGINX_PREFIX}/sites-available/default.conf
+	mkdir /var/www/default
+	chown -r ${PARAM_NGINX_USER}:${PARAM_NGINX_USER} /var/www/default
+	echo "Welcome to your new site running Nginx ${PARAM_NGINX_VERSION}, PHP-FPM ${PARAM_PHP_VERSION}, APC & MariaDB ${PARAM_MARIADB_VERSION}!" > /var/www/default/index.php
+	echo "<?php phpinfo(); ?>" > /var/www/default/index.php
 
-# Create Default Site in /sites-enabled/
-cp ${PARAM_SRC_DIR}/assets/nginx/default ${PARAM_NGINX_PREFIX}/sites-enabled/default
+	# WordPress
+	cp ${PARAM_SRC_DIR}/assets/nginx/default-wordpress.conf ${PARAM_NGINX_PREFIX}/sites-available/default-wordpress.conf
+	mkdir /var/www/default-wordpress
+	chown -r ${PARAM_NGINX_USER}:${PARAM_NGINX_USER} /var/www/default-wordpress
+	echo "Welcome to your new site running Nginx ${PARAM_NGINX_VERSION}, PHP-FPM ${PARAM_PHP_VERSION}, APC & MariaDB ${PARAM_MARIADB_VERSION}!" > /var/www/default-wordpress/index.php
+	echo "You can now go ahead and install WordPress. You won't need to worry about the configuration files, permalink support etc has been built in." > /var/www/default-wordpress/index.php
+	echo "<?php phpinfo(); ?>" > /var/www/default-wordpress/index.php
 
-chown -R ${PARAM_NGINX_USER}:${PARAM_NGINX_USER} ${PARAM_NGINX_SITES}
+	# Generic + SPDY (Requires SSL)
+	cp ${PARAM_SRC_DIR}/assets/nginx/default-spdy.conf ${PARAM_NGINX_PREFIX}/sites-available/default-spdy.conf
+	mkdir /var/www/default-spdy
+	chown -r ${PARAM_NGINX_USER}:${PARAM_NGINX_USER} /var/www/default-spdy
+	echo "Welcome to your new site running Nginx ${PARAM_NGINX_VERSION}, PHP-FPM ${PARAM_PHP_VERSION}, APC, MariaDB ${PARAM_MARIADB_VERSION} & SPDY!" > /var/www/default-spdy/index.php
+	echo "<?php phpinfo(); ?>" > /var/www/default-spdy/index.php
+
+	# Link File to Sites Enabled
+	ln -s ${PARAM_NGINX_PREFIX}/sites-available/default.conf ${PARAM_NGINX_PREFIX}/sites-enabled/default.conf
 
 }

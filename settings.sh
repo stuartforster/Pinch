@@ -21,7 +21,6 @@ PARAM_LEMP_LOG="/var/log/lemp-${PARAM_DATE}.log"
 PARAM_NGINX_PREFIX="/etc/nginx"
 PARAM_NGINX_USER="nginx"
 PARAM_NGINX_VERSION="1.2.6"
-PARAM_NGINX_SITES="/var/www"
 PARAM_NGINX_ERR_LOG="/var/log/nginx/error.log"
 PARAM_NGINX_HTTP_LOG="/var/log/nginx/access.log"
 

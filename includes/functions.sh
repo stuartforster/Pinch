@@ -70,10 +70,4 @@ function pinch_check() {
 
 }
 
-# Check Succesfull Install (only nginx has pid??)
-function pinch_success() {
-	if [[ -e "/var/run/nginx.pid" && -e "/var/run/php-fpm.pid" && -e "/var/run/mysql.pid" ]];
-		then messenger "Success! Head over to ${PARAM_PUBLIC_IP} to see your new LEMP stack in action"
-		else messenger "Error: Something went wrong, please scan for any errors in the output log at ${PARAM_INSTALL_LOG}"
-	fi
 }

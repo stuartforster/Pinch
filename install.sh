@@ -37,11 +37,7 @@ pinch_openssl;
 pinch_nginx;
 pinch_php;
 pinch_apc;
-pinch_mariadb;
-pinch_logrotate;
-
-# Check Pinch Installed Succesfully
-pinch_success
+pinch_mariadb
 
 } 2>&1 | tee -a ${PARAM_LEMP_LOG}
 

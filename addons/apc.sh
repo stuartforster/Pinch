@@ -25,8 +25,6 @@ phpize
 
 make && make install
 
-echo "extension=apc.so" >> ${PARAM_PHP_PREFIX}/php.ini
-
 sleep 5
 
 }

@@ -67,4 +67,10 @@ chmod +x /etc/init.d/php-fpm
 
 sleep 5
 
+# Backup PHP.ini
+mv ${PARAM_PHP_PREFIX}/php.ini ${PARAM_PHP_PREFIX}/php.ini.backup
+
+# Deploy PHP.ini
+cp ${PARAM_SRC_DIR}/assets/php/php.ini ${PARAM_PHP_PREFIX}/php.ini
+
 }
