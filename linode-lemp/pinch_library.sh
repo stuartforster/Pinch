@@ -11,6 +11,8 @@
 # @author Drew Morris
 #
 
+# @todo Convert all vars to format: ${VAR}
+
 # Essentials
 function pinch_essentials() {
 
@@ -18,14 +20,14 @@ function pinch_essentials() {
 	yum -y update
 
 	# Install Essential Tools
-	yum -y install vim wget curl sudo jwhois bind-utils mlocate screen git
+	yum -y install vim wget curl sudo jwhois bind-utils mlocate screen git sendmail vixie-cron crontabs
 
 	# Set Hostname
 	echo "HOSTNAME=$PINCH_HOSTNAME" >> /etc/sysconfig/network
 	hostname "$PINCH_HOSTNAME"
 
 	# Set Timezone
-	ln -s /usr/share/zoneinfo/$PINCH_TIMEZONE /etc/localtime
+	ln -fs /usr/share/zoneinfo/$PINCH_TIMEZONE /etc/localtime
 
 }
 
@@ -149,16 +151,21 @@ EOF
 	## Enable SELinux
 	sed -i 's/SELINUX=disabled/SELINUX=enforcing/g' /etc/selinux/config
 
+	## Remove unnecessary Users
+	## @todo Convert to array and foreach remove
+	userdel apache && userdel games && userdel gopher
+
 }
 
 # Configure LEMP Stack
 function pinch_configure_lemp() {
 
-	# Initial Setup
-	useradd --no-create-home www-data
+	# Create LEMP user
+	useradd -r -s /sbin/nologin www-data
 
 	# Global Settings
 	MEMORY=$(free -m | awk '/^Mem:/{print $2}')
+	CPU=$(grep -c ^processor /proc/cpuinfo)
 
 	# PHP-FPM
 	## Set Permissions
@@ -175,6 +182,7 @@ function pinch_configure_lemp() {
 	sed -i 's@listen = 127.0.0.1:9000@listen = /var/run/php-fpm.sock@g' /etc/php-fpm.d/www.conf
 
 	## Customise PHP.ini
+	## @todo Create option to set PHP timezone
 	sed -i 's/disable_functions =/disable_functions = show_source, passthru, exec, popen, proc_open, allow_url_fopen, allow_url_include/g' /etc/php.ini
 	sed -i 's@;date.timezone =@date.timezone = Australia/Sydney@g' /etc/php.ini
 
@@ -184,6 +192,10 @@ function pinch_configure_lemp() {
 	# Nginx
 	sed -i 's/user  nginx;/user www-data;/g' /etc/nginx/nginx.conf
 	sed -i 's/listen       80;/listen 8080;/g' /etc/nginx/conf.d/default.conf
+
+	## Tune Worker Processes
+	WP=$(($CPU*2))
+	sed -i 's/worker_processes  1;/worker_processes '$WP';/g' /etc/nginx/nginx.conf
 
 	# Varnish
 	## Customise Configuration
@@ -204,25 +216,21 @@ EOF
 	sed -i 's/.port = "80";/.port = "8080";/g' /etc/varnish/default.vcl
 
 	# MariaDB
-	## Retrieve Configuration File
-
-	# /usr/share/mysql
-	# Case Statement
+	## Tune MariaDB Server
+	## @todo Convert to case statement
+	rm -f /etc/my.cnf.d/server.cnf
 
 	if [[ $MEMORY -le 256 ]];
 		then
-		echo 'Memory is less than or equal to 256MB'
-		#(get my-small.cnf)
+		cp /usr/share/mysql/my-small.cnf /etc/my.cnf.d/server.cnf
 
 	elif [[ $MEMORY -le 512 ]];
 		then
-		echo 'Memory is less than or equal to 512MB'
-		#(get my-medium.cnf)
+		cp /usr/share/mysql/my-medium.cnf /etc/my.cnf.d/server.cnf
 
 	elif [[ $MEMORY -ge 1000 ]];
 		then
-		echo 'Memory is greater than or equal to 1GB'
-		#(get my-large.cnf)
+		cp /usr/share/mysql/my-large.cnf /etc/my.cnf.d/server.cnf
 	fi
 
 	## Secure DB and Set Root Password
@@ -247,6 +255,8 @@ function pinch_engage() {
 	chkconfig --add php-fpm && chkconfig php-fpm on
 	chkconfig --add varnish && chkconfig varnish on
 	chkconfig --add mysql && chkconfig mysql on
+	chkconfig --add sendmail && chkconfig sendmail on
+	chkconfig --add crond && chkconfig crond on
 
 	# Launch Services
 	service nginx restart
@@ -254,10 +264,7 @@ function pinch_engage() {
 	service varnish restart
 	service mysql restart
 	service sshd restart
-
-	# Remove Log Files
-	sleep 5
-	echo "Removing logs for security..."
-	rm -f /var/log/stackscript.log
+	service sendmail restart
+	service crond start
 
 }
