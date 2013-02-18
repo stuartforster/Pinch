@@ -20,18 +20,27 @@ FROM=`hostname`
 
 yum check-update >& ${YUMDATA}
 
-if [[ ${YUMSTATUS} = "100" ]]; then
-	SUBJECT="Updates Available"
-	MESSAGE="We found updates on your system (${HOSTNAME}). You can update your system by running yum-update."
+if [ -f /var/lock/subsys/yum ]; then
 
-elif [[ ${YUMSTATUS} = "0" ]]; then
-	SUBJECT="No Updates Available"
-	MESSAGE="We didn't find any updates available on your system (${HOSTNAME})."
+	SUBJECT="Yum Check Failed"
+	MESSAGE="We noticed Yum was running when we attempted to initiate the check, as such, the check was aborted. Will try again tomorrow."
 
-else
-	SUBJECT="Recieved Strange Return Code."
-	MESSAGE="We've recieved a strange return code from the yum-check. Perhaps you should manually check for updates."
-	
+	else
+
+		if [[ ${YUMSTATUS} = "100" ]]; then
+			SUBJECT="Updates Available"
+			MESSAGE="We found updates on your system (${HOSTNAME}). You can update your system by running yum-update."
+
+		elif [[ ${YUMSTATUS} = "0" ]]; then
+			SUBJECT="No Updates Available"
+			MESSAGE="We didn't find any updates available on your system (${HOSTNAME})."
+
+		else
+			SUBJECT="Recieved Strange Return Code."
+			MESSAGE="We've recieved a strange return code from the yum-check. Perhaps you should manually check for updates."
+			
+		fi
+
 fi
 
 YUMMESSAGE=`cat ${YUMDATA}`
