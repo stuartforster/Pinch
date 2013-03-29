@@ -27,7 +27,7 @@ if [ -f /var/lock/subsys/yum ]; then
 
 	else
 
-		if [[ ${YUMSTATUS} = "100" ]]; then
+		if [[ ${YUMSTATUS} = "1" ]]; then
 			SUBJECT="Updates Available"
 			MESSAGE="We found updates on your system (${HOSTNAME}). You can update your system by running yum-update."
 
