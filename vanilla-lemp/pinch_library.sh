@@ -261,9 +261,4 @@ function pinch_engage() {
 	service mysql restart
 	service sshd restart
 
-	# Remove Log Files
-	sleep 5
-	echo "Removing logs for security..."
-	rm -f /var/log/stackscript.log
-
 }

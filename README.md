@@ -34,6 +34,33 @@ If you're on Linode, you can simply rebuild your instance with the `Pinch-instal
 	* Disables IPv6
 	* Creates unprivledged www-data user for lemp components
 
+## Documentation
+
+### What are the PHP-FPM, Nginx, MariaDB and Varnish Locations?
+
+The locations for each of the Pinch components are as follows:
+
+* Nginx: `/etc/nginx`
+* PHP-FPM: `/etc/php-fpm.d/`
+* MariaDB: `/etc/my.cnf.d/`
+* Varnish: `/etc/varnish/` & `/etc/sysconfig/varnish/`
+
+### What is the Username and Password of my system?
+
+Pinch creates a new privledged user for your system and disables root SSH logins for security. Additionally, it will set a root password for your MariaDB server.
+
+* Hostname Option: `host.domain.com`
+* Timezone Option: `Australia/NSW`
+* New SSH Port: `3636`
+* New Root Username: `sudoninja``
+* New Root Password: `sudoninjapassword`
+* MariaDB Root Password: `mariadbpassword`
+
+For example, you can now login using `ssh -p 3636 sudoninja@x.x.x.x` with the password `sudoninjapassword`.
+
+You can adjust the defaults by modifying the parameters in the `install.sh` script, located in the `vanilla-lemp` folder.
+Alternatively, if you are using the Linode stack-script, you will be prompted to enter these options on rebuild.
+
 ## Author
 
 **Drew Morris**
