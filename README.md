@@ -52,7 +52,7 @@ Pinch creates a new privledged user for your system and disables root SSH logins
 * Hostname Option: `host.domain.com`
 * Timezone Option: `Australia/NSW`
 * New SSH Port: `3636`
-* New Root Username: `sudoninja``
+* New Root Username: `sudoninja`
 * New Root Password: `sudoninjapassword`
 * MariaDB Root Password: `mariadbpassword`
 
