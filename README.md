@@ -1,6 +1,7 @@
 # Pinch
 
 Intelligent Stack Scripts for CentOS Linux
+See [http://drewsymo.com/web-servers/baller-nginx-php-fpm-apc-mysql-install-script/](http://drewsymo.com/web-servers/baller-nginx-php-fpm-apc-mysql-install-script/) for more information.
 
 ## Installation
 
