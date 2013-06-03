@@ -11,6 +11,7 @@
 
 # Global Settings
 YUMDATA=`mktemp`
+YUMSTATUS="$?"
 
 # Delivery Settings
 # Email can be changed to personal email, e.g. myemail@gmail.com
@@ -18,7 +19,6 @@ EMAIL="root"
 FROM=`hostname`
 
 yum check-update >& ${YUMDATA}
-YUMSTATUS="${?}"
 
 if [ -f /var/lock/subsys/yum ]; then
 
@@ -27,11 +27,11 @@ if [ -f /var/lock/subsys/yum ]; then
 
 	else
 
-		if [[ ${YUMSTATUS} -eq "100" ]]; then
-			SUBJECT="Updates Available on ${HOSTNAME}"
-			MESSAGE="${HOSTNAME} has updates available. You can update your system by running yum-update."
+		if [[ ${YUMSTATUS} = "1" ]]; then
+			SUBJECT="Updates Available"
+			MESSAGE="We found updates on your system (${HOSTNAME}). You can update your system by running yum-update."
 
-		elif [[ ${YUMSTATUS} -eq "0" ]]; then
+		elif [[ ${YUMSTATUS} = "0" ]]; then
 			SUBJECT="No Updates Available"
 			MESSAGE="We didn't find any updates available on your system (${HOSTNAME})."
 
