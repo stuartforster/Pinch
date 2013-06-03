@@ -10,7 +10,8 @@
 #
 
 # Global Settings
-YUMDATA=`mktemp`
+YUMDATA=`mktemp` # temp file for command output
+SENDEMAIL=0 # 0 = no, 1 = yes
 
 # Delivery Settings
 # Email can be changed to personal email, e.g. myemail@gmail.com
@@ -24,24 +25,31 @@ if [ -f /var/lock/subsys/yum ]; then
 
 	SUBJECT="Yum Check Failed"
 	MESSAGE="We noticed Yum was running when we attempted to initiate the check, as such, the check was aborted. Will try again tomorrow."
+	logger -t update-check "${MESSAGE}"
+	SENDEMAIL=1
 
 	else
 
 		if [[ ${YUMSTATUS} -eq "100" ]]; then
-			SUBJECT="Updates Available"
-			MESSAGE="We found updates on your system (${HOSTNAME}). You can update your system by running yum-update."
+			SUBJECT="Updates Available on ${HOSTNAME}"
+			MESSAGE="${HOSTNAME} has the update below listed below available. These updates can be applied by running yum-update."
+			logger -t update-check "Updates are available for this system via yum"
+			SENDEMAIL=1
 
 		elif [[ ${YUMSTATUS} -eq "0" ]]; then
-			SUBJECT="No Updates Available"
-			MESSAGE="We didn't find any updates available on your system (${HOSTNAME})."
+			logger -t update-check "No updates available, the system appears up to date."
 
 		else
-			SUBJECT="Recieved Strange Return Code."
-			MESSAGE="We've recieved a strange return code from the yum-check. Perhaps you should manually check for updates."
+			SUBJECT="Recieved Strange Return Code on ${HOSTNAME}"
+			MESSAGE="We've recieved a strange return code from the yum-check. Perhaps you should manually check for updates. The code received was \"${YUMSTATUS}\""
+			logger -t update-check "${MESSAGE}"
+			SENDEMAIL=1
 			
 		fi
-
+	fi
 fi
+
+if [[ ${SENDEMAIL} -eq "1" ]];
 
 YUMMESSAGE=`cat ${YUMDATA}`
 
@@ -56,3 +64,5 @@ ${MESSAGE}
 ${YUMMESSAGE}
 
 EOF
+
+fi
