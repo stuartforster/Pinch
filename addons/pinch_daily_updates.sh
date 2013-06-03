@@ -23,33 +23,33 @@ YUMSTATUS="${?}"
 
 if [ -f /var/lock/subsys/yum ]; then
 
-	SUBJECT="Yum Check Failed"
-	MESSAGE="We noticed Yum was running when we attempted to initiate the check, as such, the check was aborted. Will try again tomorrow."
-	logger -t update-check "${MESSAGE}"
-	SENDEMAIL=1
+        SUBJECT="Yum Check Failed"
+        MESSAGE="We noticed Yum was running when we attempted to initiate the check, as such, the check was aborted. Will try again tomorrow."
+        logger -t update-check "${MESSAGE}"
+        SENDEMAIL=1
 
-	else
+else
 
-		if [[ ${YUMSTATUS} -eq "100" ]]; then
-			SUBJECT="Updates Available on ${HOSTNAME}"
-			MESSAGE="${HOSTNAME} has the update below listed below available. These updates can be applied by running yum-update."
-			logger -t update-check "Updates are available for this system via yum"
-			SENDEMAIL=1
+        if [[ ${YUMSTATUS} -eq "100" ]]; then
+                SUBJECT="Updates Available on ${HOSTNAME}"
+                MESSAGE="${HOSTNAME} has the update listed below available. These updates can be applied by running yum-update."
+                logger -t update-check "Updates are available for this system via yum"
+                SENDEMAIL=1
 
-		elif [[ ${YUMSTATUS} -eq "0" ]]; then
-			logger -t update-check "No updates available, the system appears up to date."
+        elif [[ ${YUMSTATUS} -eq "0" ]]; then
+                logger -t update-check "No updates available, the system appears up to date."
 
-		else
-			SUBJECT="Recieved Strange Return Code on ${HOSTNAME}"
-			MESSAGE="We've recieved a strange return code from the yum-check. Perhaps you should manually check for updates. The code received was \"${YUMSTATUS}\""
-			logger -t update-check "${MESSAGE}"
-			SENDEMAIL=1
-			
-		fi
-	fi
+        else
+                SUBJECT="Recieved Strange Return Code on ${HOSTNAME}"
+                MESSAGE="We've recieved a strange return code from the yum-check. Perhaps you should manually check for updates. The code received was \"${YUMSTATUS}\""
+                logger -t update-check "${MESSAGE}"
+                SENDEMAIL=1
+
+        fi
+
 fi
 
-if [[ ${SENDEMAIL} -eq "1" ]];
+if [[ ${SENDEMAIL} -eq "1" ]]; then
 
 YUMMESSAGE=`cat ${YUMDATA}`
 
