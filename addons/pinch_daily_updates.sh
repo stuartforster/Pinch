@@ -56,7 +56,7 @@ YUMMESSAGE=`cat ${YUMDATA}`
 # Compile & Send Email
 sendmail -t <<EOF
 To: ${EMAIL}
-Subject: ${MESSAGE}
+Subject: ${SUBJECT}
 From: ${FROM}
 
 ${MESSAGE}
