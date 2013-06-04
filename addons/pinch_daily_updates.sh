@@ -10,7 +10,8 @@
 #
 
 # Global Settings
-YUMDATA=`mktemp` # temp file for command output
+YUMDATA=`yum check-update`
+YUMSTATUS="${?}"
 SENDEMAIL=0 # 0 = no, 1 = yes
 
 # Delivery Settings
@@ -18,8 +19,6 @@ SENDEMAIL=0 # 0 = no, 1 = yes
 EMAIL="root"
 FROM=`hostname`
 
-yum check-update >& ${YUMDATA}
-YUMSTATUS="${?}"
 
 if [ -f /var/lock/subsys/yum ]; then
 
@@ -51,8 +50,6 @@ fi
 
 if [[ ${SENDEMAIL} -eq "1" ]]; then
 
-YUMMESSAGE=`cat ${YUMDATA}`
-
 # Compile & Send Email
 sendmail -t <<EOF
 To: ${EMAIL}
@@ -61,7 +58,7 @@ From: ${FROM}
 
 ${MESSAGE}
 
-${YUMMESSAGE}
+${YUMDATA}
 
 EOF
 
