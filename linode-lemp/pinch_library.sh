@@ -139,6 +139,15 @@ function pinch_security() {
 	## Disable UseDNS
 	sed -i 's/#UseDNS yes/UseDNS no/g' /etc/ssh/sshd_config
 
+	## Change Default SSH Port
+	if [[ -z "$PINCH_SSH_PORT" ]];
+		then
+			#iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+		else
+			#iptables -A INPUT -p tcp --dport $PINCH_SSH_PORT -j ACCEPT
+			sed -i 's/#Port 22/Port '"$PINCH_SSH_PORT"'/g' /etc/ssh/sshd_config
+	fi
+
 	## Deny / Allow SSH Users
 	sed -i 's/#PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
 	echo "$ROOT_USER ALL=(ALL:ALL) ALL" >> /etc/sudoers
