@@ -77,25 +77,60 @@ function pinch_security() {
 	adduser $PINCH_ROOT_USER
 	echo $PINCH_ROOT_USER_PASSWORD | passwd $PINCH_ROOT_USER --stdin
 
-	# iptables Configuration
-	iptables -F
-	iptables -t nat -F
-	iptables -X
-	iptables -P FORWARD DROP
-	iptables -P INPUT   DROP
-	iptables -P OUTPUT  ACCEPT
-
-	## HTTP (varnish)
-	iptables -A INPUT -p tcp --dport 80 -j ACCEPT
-
-	## HTTP (nginx)
-	iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
-
-	## HTTPS (SSL) Traffic
-	iptables -A INPUT -p tcp --dport 443 -j ACCEPT
-
-	## Local Loopback
-	iptables -A INPUT -i lo -p all -j ACCEPT
+	# Install CSF (Firewall)
+	cd /tmp
+	rm -rf csf/ csf.tgz
+	wget http://www.configserver.com/free/csf.tgz
+	tar -xzf csf.tgz
+	rm -f csf.tgz
+	cd csf
+	sh install.sh
+	cd /tmp
+	rm -rf csf/
+	echo "Testing IP Tables Modules..."
+	perl /etc/csf/csftest.pl
+	
+	# Adds custom values to csf.conf
+	#
+	# Based on source: csfinstall.inc and csftweaks.inc (centmin-v1.2.3mod) from the CentminMOD project (http://centminmod.com/)
+	#
+	
+	echo "CSF adding varnish port and changing SSH port in csf.conf"
+	sed -i 's/20,21,22,25,53,80,110,143,443,465,587,993,995/20,21,'$PINCH_SSH_PORT',25,53,80,110,143,443,465,587,993,995,8080/g' /etc/csf/csf.conf
+	
+	sed -i "s/TCP_OUT = \"/TCP_OUT = \"111,2049,1110,/g" /etc/csf/csf.conf
+	sed -i "s/UDP_IN = \"/UDP_IN = \"111,2049,1110,/g" /etc/csf/csf.conf
+	sed -i "s/UDP_OUT = \"/UDP_OUT = \"111,2049,1110,/g" /etc/csf/csf.conf
+	
+	echo "Disabling CSF Testing mode (activating firewall)"
+	sed -i 's/TESTING = "1"/TESTING = "0"/g' /etc/csf/csf.conf
+	
+	sed -i 's/LF_DSHIELD = "0"/LF_DSHIELD = "86400"/g' /etc/csf/csf.conf
+	sed -i 's/LF_SPAMHAUS = "0"/LF_SPAMHAUS = "86400"/g' /etc/csf/csf.conf
+	sed -i 's/LF_EXPLOIT = "300"/LF_EXPLOIT = "86400"/g' /etc/csf/csf.conf
+	sed -i 's/LF_DIRWATCH = "300"/LF_DIRWATCH = "86400"/g' /etc/csf/csf.conf
+	sed -i 's/LF_INTEGRITY = "3600"/LF_INTEGRITY = "0"/g' /etc/csf/csf.conf
+	sed -i 's/LF_PARSE = "5"/LF_PARSE = "20"/g' /etc/csf/csf.conf
+	sed -i 's/LF_PARSE = "600"/LF_PARSE = "20"/g' /etc/csf/csf.conf
+	sed -i 's/PS_LIMIT = "10"/PS_LIMIT = "15"/g' /etc/csf/csf.conf
+	sed -i 's/PT_LIMIT = "60"/PT_LIMIT = "0"/g' /etc/csf/csf.conf
+	sed -i 's/PT_USERPROC = "10"/PT_USERPROC = "0"/g' /etc/csf/csf.conf
+	sed -i 's/PT_USERMEM = "200"/PT_USERMEM = "0"/g' /etc/csf/csf.conf
+	sed -i 's/PT_USERTIME = "1800"/PT_USERTIME = "0"/g' /etc/csf/csf.conf
+	sed -i 's/PT_LOAD = "30"/PT_LOAD = "600"/g' /etc/csf/csf.conf
+	sed -i 's/PT_LOAD_AVG = "5"/PT_LOAD_AVG = "15"/g' /etc/csf/csf.conf
+	sed -i 's/PT_LOAD_LEVEL = "6"/PT_LOAD_LEVEL = "8"/g' /etc/csf/csf.conf
+	
+	sed -i 's/LF_DISTATTACK = "0"/LF_DISTATTACK = "1"/g' /etc/csf/csf.conf
+	sed -i 's/LF_DISTFTP = "0"/LF_DISTFTP = "1"/g' /etc/csf/csf.conf
+	sed -i 's/LF_DISTFTP_UNIQ = "3"/LF_DISTFTP_UNIQ = "6"/g' /etc/csf/csf.conf
+	sed -i 's/LF_DISTFTP_PERM = "3600"/LF_DISTFTP_PERM = "6000"/g' /etc/csf/csf.conf
+	
+	sed -i 's/DENY_IP_LIMIT = \"100\"/DENY_IP_LIMIT = \"1000\"/' /etc/csf/csf.conf
+	sed -i 's/DENY_TEMP_IP_LIMIT = \"100\"/DENY_TEMP_IP_LIMIT = \"1000\"/' /etc/csf/csf.conf
+	
+	# Launch CSF to ensure we are protected as soon as possible
+	service csf restart
 
 	# SSH Configuration
 
@@ -105,9 +140,9 @@ function pinch_security() {
 	## Change Default SSH Port
 	if [[ -z "$PINCH_SSH_PORT" ]];
 		then
-			iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+			#iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 		else
-			iptables -A INPUT -p tcp --dport $PINCH_SSH_PORT -j ACCEPT
+			#iptables -A INPUT -p tcp --dport $PINCH_SSH_PORT -j ACCEPT
 			sed -i 's/#Port 22/Port '"$PINCH_SSH_PORT"'/g' /etc/ssh/sshd_config
 	fi
 
