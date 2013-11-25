@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Pinch by drewsymo</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Pinch</h1>
+        <p>Stack Scripts for Linux</p>
+
+        <p class="view"><a href="https://github.com/drewsymo/Pinch">View the Project on GitHub <small>drewsymo/Pinch</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/drewsymo/Pinch/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/drewsymo/Pinch/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/drewsymo/Pinch">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="pinch" class="anchor" href="#pinch"><span class="octicon octicon-link"></span></a>Pinch</h1>
+
+<p>Intelligent Stack Scripts for CentOS Linux
+See <a href="http://drewsymo.com/web-servers/baller-nginx-php-fpm-apc-mysql-install-script/">http://drewsymo.com/web-servers/baller-nginx-php-fpm-apc-mysql-install-script/</a> for more information.</p>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Pinch is a pinch to install, simply execute the following commands to get started:</p>
+
+<pre><code>$ yum install -y git
+$ git clone git://github.com/drewsymo/Pinch.git
+$ cd Pinch/vanilla-lemp &amp;&amp; bash install.sh
+</code></pre>
+
+<p>If you're on Linode, you can simply rebuild your instance with the <code>Pinch-installer</code> <a href="www.linode.com/stackscripts/">stackscript</a>.</p>
+
+<h2>
+<a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<ul>
+<li>Installs a LEMP stack (PHP-FPM, MariaDB, APC, Nginx and Varnish Cache) via Yum</li>
+<li>Configures Varnish Cache with Nginx out-of-the-box</li>
+<li>Sets your hostname, timezone and installs essential tools</li>
+<li>Uses GoogleDNS with Level3 tertiary resolver</li>
+<li>Intelligentelly configures Nginx based on CPU cores</li>
+<li>Sets Varnish memory allocation percentage based on total memory</li>
+<li>Retrieves MariaDB server.cnf based on total memory</li>
+<li>Sets MariaDB root password and removes testing user / tables</li>
+<li>Creates a daily cron with email notifications for available Yum updates</li>
+<li>Secures your system via the following methods:
+
+<ul>
+<li>Creates privledged sudo user</li>
+<li>Disable SSH root logins</li>
+<li>Disables UseDNS</li>
+<li>Change default SSH port</li>
+<li>Enables SElinux</li>
+<li>Firewall via CSF / iptables</li>
+<li>Sets common network security parameters</li>
+<li>Disables IPv6</li>
+<li>Creates unprivledged www-data user for lemp components</li>
+</ul>
+</li>
+</ul><h2>
+<a name="documentation" class="anchor" href="#documentation"><span class="octicon octicon-link"></span></a>Documentation</h2>
+
+<h3>
+<a name="what-are-the-php-fpm-nginx-mariadb-and-varnish-locations" class="anchor" href="#what-are-the-php-fpm-nginx-mariadb-and-varnish-locations"><span class="octicon octicon-link"></span></a>What are the PHP-FPM, Nginx, MariaDB and Varnish Locations?</h3>
+
+<p>The locations for each of the Pinch components are as follows:</p>
+
+<ul>
+<li>Nginx: <code>/etc/nginx</code>
+</li>
+<li>PHP-FPM: <code>/etc/php-fpm.d/</code>
+</li>
+<li>MariaDB: <code>/etc/my.cnf.d/</code>
+</li>
+<li>Varnish: <code>/etc/varnish/</code> &amp; <code>/etc/sysconfig/varnish/</code>
+</li>
+</ul><h3>
+<a name="what-is-the-username-and-password-of-my-system" class="anchor" href="#what-is-the-username-and-password-of-my-system"><span class="octicon octicon-link"></span></a>What is the Username and Password of my system?</h3>
+
+<p>Pinch creates a new privledged user for your system and disables root SSH logins for security. Additionally, it will set a root password for your MariaDB server.</p>
+
+<ul>
+<li>Hostname Option: <code>host.domain.com</code>
+</li>
+<li>Timezone Option: <code>Australia/NSW</code>
+</li>
+<li>New SSH Port: <code>3636</code>
+</li>
+<li>New Root Username: <code>sudoninja</code>
+</li>
+<li>New Root Password: <code>sudoninjapassword</code>
+</li>
+<li>MariaDB Root Password: <code>mariadbpassword</code>
+</li>
+</ul><p>For example, you can now login using <code>ssh -p 3636 sudoninja@x.x.x.x</code> with the password <code>sudoninjapassword</code>.</p>
+
+<p>You can adjust the defaults by modifying the parameters in the <code>install.sh</code> script, located in the <code>vanilla-lemp</code> folder.
+Alternatively, if you are using the Linode stack-script, you will be prompted to enter these options on rebuild.</p>
+
+<h2>
+<a name="author" class="anchor" href="#author"><span class="octicon octicon-link"></span></a>Author</h2>
+
+<p><strong>Drew Morris</strong></p>
+
+<ul>
+<li><a href="http://drewsymo.com">Blog</a></li>
+<li><a href="http://twitter.com/drewsymo">Twitter</a></li>
+<li><a href="https://plus.google.com/u/0/114153589610660530694">Google+</a></li>
+</ul><h2>
+<a name="recommended-providers" class="anchor" href="#recommended-providers"><span class="octicon octicon-link"></span></a>Recommended Providers</h2>
+
+<ul>
+<li>
+<a href="http://fastdot.com">Fastdot Cloud VPS Hosting</a> (Australia, Asia-Pacific, UK, USA)</li>
+<li>
+<a href="http://www.ausweb.com.au">AUSWEB VMware Hosting</a> (Australia)</li>
+</ul>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/drewsymo">drewsymo</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
