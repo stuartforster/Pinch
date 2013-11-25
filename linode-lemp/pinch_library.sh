@@ -81,23 +81,35 @@ function pinch_security() {
 
 	# iptables Configuration
 	iptables -F
-	iptables -t nat -F
 	iptables -X
+	iptables -t nat -F
+	iptables -t nat -X
+	iptables -t mangle -F
+	iptables -t mangle -X
+	iptables -P INPUT DROP
 	iptables -P FORWARD DROP
-	iptables -P INPUT   DROP
-	iptables -P OUTPUT  ACCEPT
+	iptables -P OUTPUT ACCEPT
+
+	## DNS
+	iptables -I INPUT -p udp -dport 53 -j ACCEPT
+	iptables -I INPUT -p udp -sport 53 -j ACCEPT
 
 	## HTTP (varnish)
-	iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+	iptables -I INPUT -p tcp -dport 80 -j ACCEPT
+	iptables -I INPUT -p tcp -sport 80 -j ACCEPT
 
 	## HTTP (nginx)
-	iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
+	iptables -I INPUT -p tcp -dport 8080 -j ACCEPT
+	iptables -I INPUT -p tcp -sport 8080 -j ACCEPT
 
 	## HTTPS (SSL) Traffic
-	iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+	iptables -I INPUT -p tcp -dport 443 -j ACCEPT
+	iptables -I INPUT -p tcp -sport 443 -j ACCEPT
 
 	## Local Loopback
-	iptables -A INPUT -i lo -p all -j ACCEPT
+	iptables -I INPUT -i lo -p all -j ACCEPT
+
+	service iptables save && service iptables restart
 
 	# SSH Configuration
 
@@ -107,9 +119,12 @@ function pinch_security() {
 	## Change Default SSH Port
 	if [[ -z "$PINCH_SSH_PORT" ]];
 		then
-			iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+			iptables -I INPUT -p tcp -dport 22 -j ACCEPT
+			iptables -I INPUT -p tcp -sport 22 -j ACCEPT
 		else
-			iptables -A INPUT -p tcp --dport $PINCH_SSH_PORT -j ACCEPT
+			iptables -I INPUT -p tcp -dport $PINCH_SSH_PORT -j ACCEPT
+			iptables -I INPUT -p tcp -sport $PINCH_SSH_PORT -j ACCEPT
+
 			sed -i 's/#Port 22/Port '"$PINCH_SSH_PORT"'/g' /etc/ssh/sshd_config
 	fi
 
@@ -117,6 +132,9 @@ function pinch_security() {
 	sed -i 's/#PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
 	echo "$ROOT_USER ALL=(ALL:ALL) ALL" >> /etc/sudoers
 	echo "AllowUsers $ROOT_USER" >> /etc/ssh/sshd_config
+
+	# Save and Restart iptables
+	service iptables save && service iptables restart
 
 	# Networking / Sys Configuration
 
