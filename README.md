@@ -30,7 +30,7 @@ If you're on Linode, you can simply rebuild your instance with the `Pinch-instal
 	* Disables UseDNS
 	* Change default SSH port
 	* Enables SElinux
-	* Firewall via iptables
+	* Firewall via CSF / iptables
 	* Sets common network security parameters
 	* Disables IPv6
 	* Creates unprivledged www-data user for lemp components
@@ -69,3 +69,8 @@ Alternatively, if you are using the Linode stack-script, you will be prompted to
 + [Blog](http://drewsymo.com)
 + [Twitter](http://twitter.com/drewsymo)
 + [Google+](https://plus.google.com/u/0/114153589610660530694)
+
+## Recommended Providers
+
++ [Fastdot Cloud VPS Hosting](http://fastdot.com) (Australia, Asia-Pacific, UK, USA)
++ [AUSWEB VMware Hosting](http://www.ausweb.com.au) (Australia)
