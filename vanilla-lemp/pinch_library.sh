@@ -126,6 +126,9 @@ function pinch_security() {
 
 	## Disable UseDNS
 	sed -i 's/#UseDNS yes/UseDNS no/g' /etc/ssh/sshd_config
+
+	## Change Standard Port
+	sed -i 's/#Port 22/Port ${PINCH_SSH_PORT}/g' /etc/ssh/sshd_config
 	
 	## Deny / Allow SSH Users
 	sed -i 's/#PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
@@ -206,7 +209,6 @@ function pinch_configure_lemp() {
 
 	# Nginx
 	sed -i 's/user  nginx;/user www-data;/g' /etc/nginx/nginx.conf
-	sed -i 's/listen       80;/listen 8080;/g' /etc/nginx/conf.d/default.conf
 
 	## Tune Worker Processes & Connections (Not accurate for most para-virtualised systems)
 	WP=$((${CPU}*2))
