@@ -34,8 +34,11 @@ read -e -p "Enter the MariaDB root password: " -i "mariadbpassword" PINCH_MARIAD
 
 (
 
+# Set Path
+PINCH_DIR=`dirname $0`
+
 # Retrieve Pinch Library
-. pinch_library.sh
+. $PINCH_DIR/pinch_library.sh
 
 # Run Pinch Installer
 pinch=(
