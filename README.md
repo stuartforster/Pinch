@@ -15,12 +15,10 @@ If you're on Linode, you can simply rebuild your instance with the `Pinch-instal
 
 ## Features
 
-* Installs a LEMP stack (PHP-FPM, MariaDB, APC, Nginx and Varnish Cache) via Yum
-* Configures Varnish Cache with Nginx out-of-the-box
+* Installs a LEMP stack (PHP-FPM, MariaDB, APC, Nging) via Yum
 * Sets your hostname, timezone and installs essential tools
 * Uses GoogleDNS with Level3 tertiary resolver
 * Intelligentelly configures Nginx based on CPU cores
-* Sets Varnish memory allocation percentage based on total memory
 * Retrieves MariaDB server.cnf based on total memory
 * Sets MariaDB root password and removes testing user / tables
 * Creates a daily cron with email notifications for available Yum updates
@@ -37,14 +35,13 @@ If you're on Linode, you can simply rebuild your instance with the `Pinch-instal
 
 ## Documentation
 
-### What are the PHP-FPM, Nginx, MariaDB and Varnish Locations?
+### What are the PHP-FPM, Nginx and MariaDB Locations?
 
 The locations for each of the Pinch components are as follows:
 
 * Nginx: `/etc/nginx`
 * PHP-FPM: `/etc/php-fpm.d/`
 * MariaDB: `/etc/my.cnf.d/`
-* Varnish: `/etc/varnish/` & `/etc/sysconfig/varnish/`
 
 ### What is the Username and Password of my system?
 
