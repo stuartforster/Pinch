@@ -205,7 +205,7 @@ function pinch_configure_lemp() {
 	sed -i 's@;date.timezone =@date.timezone = ${PINCH_TIMEZONE}@g' /etc/php.ini
 
 	## FastCGI Configuration
-	echo "fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;" >> /etc/nginx/fastcgi_params
+	echo "fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;" >> /etc/nginx/fastcgi_params
 
 	# Nginx
 	sed -i 's/user  nginx;/user www-data;/g' /etc/nginx/nginx.conf
