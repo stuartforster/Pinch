@@ -29,9 +29,9 @@ function pinch_essentials() {
 	hostname ${PINCH_HOSTNAME}
 
 	# Set Nameservers
-	echo "8.8.8.8" > /etc/resolv.conf # Google DNS
-	echo "209.244.0.3" >> /etc/resolv.conf # Level3 DNS
-	echo "74.82.42.42" >> /etc/resolv.conf # Hurricane Electric DNS
+	echo "nameserver 8.8.8.8" > /etc/resolv.conf # Google DNS
+	echo "nameserver 209.244.0.3" >> /etc/resolv.conf # Level3 DNS
+	echo "nameserver 74.82.42.42" >> /etc/resolv.conf # Hurricane Electric DN
 
 	# Set Timezone
 	ln -s /usr/share/zoneinfo/${PINCH_TIMEZONE} /etc/localtime
@@ -255,6 +255,9 @@ function pinch_engage() {
 
 	# Update Search Index
 	updatedb
+
+	# Remove Conflicting Packages
+	yum remove httpd
 
 	# Ensure Services Boot on Startup
 	chkconfig --add nginx && chkconfig nginx on
