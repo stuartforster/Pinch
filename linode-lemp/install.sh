@@ -6,7 +6,7 @@
 #
 # Installs a LEMP stack and sets up system for server production-environment.
 #
-# @package Pinch 2.1
+# @package Pinch 2.2
 # @since Pinch 1.0
 # @author Drew Morris
 # @author Vincent van daal
@@ -51,7 +51,6 @@ pinch=(
 	'pinch_rpm'
 	'pinch_nginx'
 	'pinch_php'
-	'pinch_varnish'
 	'pinch_mariadb'
 	'pinch_security'
 	'pinch_configure_lemp'

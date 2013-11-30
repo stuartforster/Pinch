@@ -43,7 +43,6 @@ pinch=(
 	'pinch_rpm'
 	'pinch_nginx'
 	'pinch_php'
-	'pinch_varnish'
 	'pinch_mariadb'
 	'pinch_security'
 	'pinch_configure_lemp'

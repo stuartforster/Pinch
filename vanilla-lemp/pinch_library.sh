@@ -22,7 +22,7 @@ function pinch_essentials() {
 	yum -y remove postfix
 	
 	# Install Essential Tools
-	yum -y install vim wget curl sudo jwhois bind-utils mlocate screen git sendmail vixie-cron crontabs  perl-libwww-perl perl-Time-HiRes
+	yum -y install vim wget curl sudo jwhois bind-utils mlocate screen git vixie-cron crontabs perl-libwww-perl perl-Time-HiRes
 
 	# Set Hostname
 	echo "HOSTNAME=${PINCH_HOSTNAME}" >> /etc/sysconfig/network
@@ -36,9 +36,8 @@ function pinch_essentials() {
 # Install RPM's / Repositories
 function pinch_rpm() {
 
-	rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+	rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 	rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
-	rpm --nosignature -i http://repo.varnish-cache.org/redhat/varnish-3.0/el5/noarch/varnish-release-3.0-1.noarch.rpm
 	rpm -Uvh http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
 
 	cat > /etc/yum.repos.d/MariaDB.repo << EOF
@@ -64,11 +63,6 @@ function pinch_php() {
 	yum -y --enablerepo=remi install php php-fpm php-gd php-mysqlnd php-mbstring php-xml php-mcrypt php-pecl-apc php-pdo
 }
 
-# Install Varnish Cache
-function pinch_varnish() {
-	yum -y --disablerepo=epel install varnish
-}
-
 # Install MariaDB
 function pinch_mariadb() {
 	yum -y --disablerepo=epel install MariaDB-server MariaDB-client
@@ -78,10 +72,10 @@ function pinch_mariadb() {
 function pinch_security() {
 
 	# Create new root user
-	adduser ${PINCH_ROOT_USER}
-	echo ${PINCH_ROOT_USER_PASSWORD} | passwd ${PINCH_ROOT_USER} --stdin
+	adduser $ROOT_USER
+	echo $ROOT_PASSWORD | passwd $ROOT_USER --stdin
 
-	# Install CSF (Firewall)
+	# Install CSF
 	cd /tmp
 	rm -rf csf/ csf.tgz
 	wget http://www.configserver.com/free/csf.tgz
@@ -95,13 +89,10 @@ function pinch_security() {
 	perl /etc/csf/csftest.pl
 	
 	# Adds custom values to csf.conf
-	#
-	# Based on source: csfinstall.inc and csftweaks.inc (centmin-v1.2.3mod) from the CentminMOD project (http://centminmod.com/)
-	#
 	
-	echo "CSF adding varnish port and changing SSH port in csf.conf"
-	sed -i 's/20,21,22,25,53,80,110,143,443,465,587,993,995/20,21,'${PINCH_SSH_PORT}',25,53,80,110,143,443,465,587,993,995,8080/g' /etc/csf/csf.conf
-	
+	echo "CSF changing SSH port in csf.conf"
+	sed -i 's/20,21,22,25,53,80,110,143,443,465,587,993,995/20,21,'${PINCH_SSH_PORT}',25,53,80,110,143,443,465,587,993,995/g' /etc/csf/csf.conf
+
 	sed -i "s/TCP_OUT = \"/TCP_OUT = \"111,2049,1110,/g" /etc/csf/csf.conf
 	sed -i "s/UDP_IN = \"/UDP_IN = \"111,2049,1110,/g" /etc/csf/csf.conf
 	sed -i "s/UDP_OUT = \"/UDP_OUT = \"111,2049,1110,/g" /etc/csf/csf.conf
@@ -132,17 +123,9 @@ function pinch_security() {
 	
 	sed -i 's/DENY_IP_LIMIT = \"100\"/DENY_IP_LIMIT = \"1000\"/' /etc/csf/csf.conf
 	sed -i 's/DENY_TEMP_IP_LIMIT = \"100\"/DENY_TEMP_IP_LIMIT = \"1000\"/' /etc/csf/csf.conf
-	
-	# SSH Configuration
 
 	## Disable UseDNS
 	sed -i 's/#UseDNS yes/UseDNS no/g' /etc/ssh/sshd_config
-
-	## Change Default SSH Port
-	if [[ ! -z "${PINCH_SSH_PORT}" ]];
-		then
-		sed -i 's/#Port 22/Port '"${PINCH_SSH_PORT}"'/g' /etc/ssh/sshd_config
-	fi
 	
 	## Deny / Allow SSH Users
 	sed -i 's/#PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
@@ -232,24 +215,6 @@ function pinch_configure_lemp() {
 	WC=$((1024*${CPU}))
 	sed -i 's/worker_connections  1024;/worker_connections '${WC}';/g' /etc/nginx/nginx.conf
 
-	# Varnish
-	## Customise Configuration
-	mv /etc/sysconfig/varnish /etc/sysconfig/varnish.bak
-
-	## Get Memory Allocation
-	MALLOC=$((${MEMORY}*20/100))
-
-	cat > /etc/sysconfig/varnish << EOF
-	DAEMON_OPTS="-a :80 \
-		-T localhost:6081 \
-		-f /etc/varnish/default.vcl \
-		-u varnish -g varnish \
-		-S /etc/varnish/secret \
-		-s malloc,${MALLOC}m"
-EOF
-
-	sed -i 's/.port = "80";/.port = "8080";/g' /etc/varnish/default.vcl
-
 	# MariaDB
 	## Tune MariaDB Server
 	rm -f /etc/my.cnf.d/server.cnf
@@ -287,19 +252,15 @@ function pinch_engage() {
 	# Ensure Services Boot on Startup
 	chkconfig --add nginx && chkconfig nginx on
 	chkconfig --add php-fpm && chkconfig php-fpm on
-	chkconfig --add varnish && chkconfig varnish on
 	chkconfig --add mysql && chkconfig mysql on
 	chkconfig --add csf && chkconfig csf on
-	chkconfig --add sendmail && chkconfig sendmail on
 	chkconfig --add crond && chkconfig crond on
 
-	# Launch Services
+	# Launch  Services
 	service nginx restart
 	service php-fpm restart
-	service varnish restart
 	service mysql restart
 	service sshd restart
-	service sendmail restart
 	service crond start
 	csf -r
 }
