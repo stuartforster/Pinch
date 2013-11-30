@@ -28,6 +28,11 @@ function pinch_essentials() {
 	echo "HOSTNAME=${PINCH_HOSTNAME}" >> /etc/sysconfig/network
 	hostname ${PINCH_HOSTNAME}
 
+	# Set Nameservers
+	echo "8.8.8.8" > /etc/resolv.conf # Google DNS
+	echo "209.244.0.3" >> /etc/resolv.conf # Level3 DNS
+	echo "74.82.42.42" >> /etc/resolv.conf # Hurricane Electric DNS
+
 	# Set Timezone
 	ln -s /usr/share/zoneinfo/${PINCH_TIMEZONE} /etc/localtime
 
