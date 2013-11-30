@@ -35,6 +35,10 @@ If you're on Linode, you can simply rebuild your instance with the `Pinch-instal
 
 ## Documentation
 
+### Example Nginx Configuration with PHP-FPM
+
+You can find an example `default.conf` file in the root of this repository. 
+
 ### What are the PHP-FPM, Nginx and MariaDB Locations?
 
 The locations for each of the Pinch components are as follows:
