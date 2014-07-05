@@ -206,7 +206,7 @@ function pinch_configure_lemp() {
 	sed -i 's@listen = 127.0.0.1:9000@listen = /var/run/php-fpm.sock@g' /etc/php-fpm.d/www.conf
 
 	## Customise PHP.ini
-	sed -i 's/disable_functions =/disable_functions = show_source, passthru, exec, popen, proc_open, allow_url_fopen, allow_url_include/g' /etc/php.ini
+	# sed -i 's/disable_functions =/disable_functions = show_source, passthru, exec, popen, proc_open, allow_url_fopen, allow_url_include/g' /etc/php.ini
 	sed -i 's@;date.timezone =@date.timezone = ${PINCH_TIMEZONE}@g' /etc/php.ini
 
 	## FastCGI Configuration
