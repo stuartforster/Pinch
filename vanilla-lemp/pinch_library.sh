@@ -48,7 +48,7 @@ function pinch_rpm() {
 	cat > /etc/yum.repos.d/MariaDB.repo << EOF
 [mariadb]
 name = MariaDB
-baseurl = http://yum.mariadb.org/5.5/centos6-x86
+baseurl = http://yum.mariadb.org/10.1/centos6-amd64
 gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
 gpgcheck=1
 EOF
@@ -65,7 +65,7 @@ function pinch_nginx() {
 
 # Install PHP
 function pinch_php() {
-	yum -y --enablerepo=remi install php php-fpm php-gd php-mysqlnd php-mbstring php-xml php-mcrypt php-pecl-apc php-pdo
+	yum -y --enablerepo=remi,remi-php55 install php php-fpm php-gd php-mysqlnd php-mbstring php-xml php-mcrypt php-pecl-apc php-pdo
 }
 
 # Install MariaDB
@@ -133,7 +133,7 @@ function pinch_security() {
 	sed -i 's/#UseDNS yes/UseDNS no/g' /etc/ssh/sshd_config
 
 	## Change Standard Port
-	sed -i 's/#Port 22/Port ${PINCH_SSH_PORT}/g' /etc/ssh/sshd_config
+	sed -i 's/#Port 22/Port '${PINCH_SSH_PORT}'/g' /etc/ssh/sshd_config
 	
 	## Deny / Allow SSH Users
 	sed -i 's/#PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
